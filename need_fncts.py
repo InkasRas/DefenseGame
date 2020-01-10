@@ -13,3 +13,4 @@ def load_image(name, clr_key=None):
         img = img.convert_alpha()
     return img
 
+
