@@ -4,12 +4,14 @@ from all_variables import Button
 
 
 class Menu(pygame.Surface):
-    def __init__(self, x, y):
-        super().__init__((120, 50))
+    def __init__(self, lvl):
+        super().__init__((1280, 40))
         self.fill((0, 0, 0))
-        self.x = x
-        self.y = y
-        # self.set_alpha(120)
+        self.x = 0
+        self.y = 720 - 60
+        self.lvl = lvl
+        self.set_alpha(120)
+        self.rect = pygame.Rect((self.x, self.y), self.get_size())
         self.create_buttons()
 
     def draw(self, srfc):
@@ -18,12 +20,22 @@ class Menu(pygame.Surface):
     def change_pos(self, x, y):
         self.x = x
         self.y = y
+        self.rect.x, self.rect.y = x, y
 
     def create_buttons(self):
-        archer_img = pygame.transform.scale(load_image('archer/1_IDLE_003.png'), (50, 50))
-        archer_btn = Button(archer_img, 'arhcer', 0, 0)
-        wall_img = pygame.Surface((50, 50))
-        pygame.draw.rect(wall_img, (99, 9, 99), ((0, 0), (50, 50)))
-        wall_btn = Button(wall_img, 'wall', 60, 0)
-        self.blits(blit_sequence=((wall_img, (wall_btn.x, wall_btn.y)),
-                                  (archer_img, (archer_btn.x, archer_btn.y))))
+        self.buttons = pygame.sprite.Group()
+        for i in range(self.lvl):
+            font = pygame.font.Font('freesansbold.ttf', 12)
+            text = font.render(str(i + 1), True, (255, 255, 255))
+            archer_img = pygame.Surface((40, 40))
+            archer_img.blit(pygame.transform.scale(load_image('archer/1_IDLE_003.png'), (40, 40)), (0, 0))
+            archer_img.blit(text, (14, 14))
+            archer_btn = Button(archer_img, 'archer' + str(i), i * 60 + 5, 0)
+
+            wall_img = pygame.Surface((40, 40))
+            pygame.draw.rect(wall_img, (128, 128, 128), ((15, 0), (10, 40)))
+            wall_img.blit(text, (17, 17))
+            wall_btn = Button(wall_img, 'wall' + str(i), 1280 - (i + 1) * 60 - 10 * i, 0)
+
+            self.buttons.add(wall_btn, archer_btn)
+        self.buttons.draw(self)
