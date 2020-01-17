@@ -8,9 +8,9 @@ from menu import Menu
 
 
 class Wall(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, lvl):
         super().__init__()
-        self.lvl = 0
+        self.lvl = lvl
         self.image = pygame.Surface((20, 80))
         self.price = wall_lvls[self.lvl][0]
         self.health = wall_lvls[self.lvl][1]

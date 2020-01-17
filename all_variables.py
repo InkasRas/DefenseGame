@@ -93,3 +93,4 @@ help_img = 'help.png'
 close_img = 'close.png'
 archer_lvls = {0: (90, 3, 5), 1: (100, 4, 6), 2: (200, 5, 8)}
 wall_lvls = {0: (10, 4), 1: (15, 5), 2: (20, 6)}
+enemy_lvls = {0: (2, 1), 1: (3, 2), 2: (4, 3)}

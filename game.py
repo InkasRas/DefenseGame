@@ -24,9 +24,12 @@ class Game:
         self.level_info = get_level(lvl)
         self.money = int(self.level_info['money'])
         self.k = float(self.level_info['k'])
+        self.time = int(self.level_info['time'])
+        self.enm_num = int(self.level_info['en_nm'])
+        # self.can_mode = bool(self.level_info['can_mode'])
         self.parent = parent_screen
         self.cursor = Cursor()
-        self.wave = int(lvl)
+        self.lvl = lvl
         self.cell_size = CELL_SIZE
         self.w, self.h = 1280 // CELL_SIZE, 720 // CELL_SIZE
         self.board = []
@@ -39,10 +42,11 @@ class Game:
         self.bg = load_image('background.jpg')
         self.parent.blit(self.bg, (0, 0))
         self.game_state = GAME_STATE_1
-        moving_srfc('Wave ' + str(self.wave + 1), self.parent)
-        self.archers, self.walls = start_placing(self)
+        moving_srfc('Wave ' + str(self.lvl + 1), self.parent)
+        self.archers, self.walls = start_placing(self, lvl)
         self.all_sprites = pygame.sprite.Group()
-        self.create_enemies(2)
+        # self.create_enemies(2)
+        pygame.mouse.set_visible(True)
         self.main_loop(self.analyse_archers)
 
     def analyse_obstacles(self):
@@ -85,7 +89,6 @@ class Game:
         for i in range(number):
             # cords = chc[random.choice(list(chc.keys()))]()
             cords = chc['left']()
-
             enemies_cords.append(cords)
             enm = Enemy(*cords, self.castle.rect.center)
             enm.rot(cords[0] - self.castle.rect.center[0])
@@ -102,7 +105,7 @@ class Game:
                 if evnt.type == pygame.QUIT:
                     exit()
                 if evnt.type == pygame.MOUSEBUTTONDOWN:
-                    enm = Enemy(*evnt.pos)
+                    Game(self.parent, self.lvl + 1)
             self.draw_necessary()
             if fnct is not None:
                 fnct()

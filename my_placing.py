@@ -55,14 +55,14 @@ def draw_cells(srfc, game):
                                          (game.cell_size, game.cell_size)), 1)
 
 
-def archer_and_wall_placing(game):
+def archer_and_wall_placing(game, lvl):
     moving_srfc('Place archers\nand walls', game.parent)
     clock = pygame.time.Clock()
     cursor = Cursor()
     running = True
     archers = []
     walls = []
-    game.menu = Menu(1)
+    game.menu = Menu(lvl + 1)
     directions = {pygame.K_DOWN: (lambda x: pygame.transform.flip(x.image, True, False)),
                   pygame.K_UP: (lambda x: pygame.transform.flip(x.image, False, True)),
                   pygame.K_LEFT: (lambda x: pygame.transform.rotate(x.image, 90)),
@@ -84,11 +84,11 @@ def archer_and_wall_placing(game):
                     clicked_btn = pygame.sprite.spritecollideany(cursor.change_offset(game.menu), game.menu.buttons)
                     try:
                         if clicked_btn.name[:-1] == ARCHER:
-                            s_btn = Archer(*evnt.pos)
+                            s_btn = Archer(*evnt.pos, int(clicked_btn.name[-1]))
                             img_drawing = True
                             pygame.mouse.set_visible(False)
                         elif clicked_btn.name[:-1] == WALL:
-                            s_btn = Wall(*evnt.pos)
+                            s_btn = Wall(*evnt.pos, int(clicked_btn.name[-1]))
                             img_drawing = True
                             pygame.mouse.set_visible(False)
                     except Exception:
@@ -103,10 +103,10 @@ def archer_and_wall_placing(game):
                         fill_board(s_btn, game.board)
                         if s_btn.name == ARCHER:
                             archers.append(s_btn)
-                            s_btn = Archer(*evnt.pos)
+                            s_btn = Archer(*evnt.pos, s_btn.lvl)
                         else:
                             walls.append(s_btn)
-                            s_btn = Wall(*evnt.pos)
+                            s_btn = Wall(*evnt.pos, s_btn.lvl)
                         game.money -= s_btn.price
                     else:
                         img_drawing = False
@@ -165,6 +165,6 @@ def moving_srfc(text, surf):
         pygame.display.flip()
 
 
-def start_placing(game):
+def start_placing(game, lvl):
     castle_placing(game)
-    return archer_and_wall_placing(game)
+    return archer_and_wall_placing(game, lvl)
