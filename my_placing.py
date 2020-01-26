@@ -11,8 +11,9 @@ from wall import Wall
 
 def castle_placing(game):
     castle = Castle(0, 0)
-    btn_img = pygame.transform.scale(load_image('play.png', -1), (50, 50))
+    btn_img = pygame.transform.scale(load_image(PLAY_IMG, -1), (50, 50))
     stop_btn = Button(btn_img, 'castle_btn', 1200, 650)
+    font = pygame.font.Font('freesansbold.ttf', 30)
     running = True
     placing = False
     dx, dy = None, None
@@ -23,10 +24,10 @@ def castle_placing(game):
                 fill_board(castle, game.board, val=CASTLE)
                 return True
             elif evnt.type == pygame.MOUSEBUTTONDOWN:
-                if stop_btn.rect.collidepoint(evnt.pos):
+                if stop_btn.rect.collidepoint(*evnt.pos):
                     game.castle = castle
                     return True
-                else:
+                elif castle.rect.collidepoint(*evnt.pos):
                     placing = True
                     dx = evnt.pos[0] - castle.x
                     dy = evnt.pos[1] - castle.y
@@ -40,6 +41,8 @@ def castle_placing(game):
                 exit()
         game.parent.blit(game.bg, (0, 0))
         # draw_cells(game.parent, game)
+        text = font.render(str(castle.get_board_pos()), True, (255, 255, 255))
+        game.parent.blit(text, (WINDOW_W - text.get_size()[0], 0))
         pygame.draw.rect(game.parent, (255, 0, 0), castle.rect, 2)
         stop_btn.draw(game.parent)
         castle.draw(game.parent)
@@ -56,7 +59,6 @@ def draw_cells(srfc, game):
 
 
 def archer_and_wall_placing(game, lvl):
-    moving_srfc('Place archers\nand walls', game.parent)
     clock = pygame.time.Clock()
     cursor = Cursor()
     running = True
@@ -114,6 +116,7 @@ def archer_and_wall_placing(game, lvl):
             elif evnt.type == pygame.MOUSEMOTION:
                 if img_drawing:
                     s_btn.change_pos(*evnt.pos)
+
         game.parent.blit(game.bg, (0, 0))
         game.menu.draw(game.parent)
         game.castle.draw(game.parent)
@@ -123,20 +126,23 @@ def archer_and_wall_placing(game, lvl):
             else:
                 pygame.draw.rect(game.parent, (255, 0, 0), s_btn.rect, 2)
                 s_btn.draw(game.parent)
+
         for archer in archers:
             archer.draw(game.parent)
         for wall in walls:
             wall.draw(game.parent)
+
         text_m = font.render('$' + str(game.money), True, (255, 255, 255))
         text_a = font.render('Archers :' + str(len(archers)), True, (255, 255, 255))
         text_w = font.render('Walls :' + str(len(walls)), True, (255, 255, 255))
         game.parent.blit(text_m, (1280 - text_m.get_size()[0], 0))
         game.parent.blit(text_a, (1280 - text_a.get_size()[0], 50))
         game.parent.blit(text_w, (1280 - text_w.get_size()[0], 100))
+
         pygame.display.flip()
 
 
-def fill_board(btn, board, val=True):
+def fill_board(btn, board, val=OBSTACLE):
     w, h = btn.get_rect().w, btn.get_rect().h
     for i in range(btn.rect.w // CELL_SIZE):
         for j in range(btn.rect.h // CELL_SIZE):
@@ -167,4 +173,5 @@ def moving_srfc(text, surf):
 
 def start_placing(game, lvl):
     castle_placing(game)
+    moving_srfc('Place them', game.parent)
     return archer_and_wall_placing(game, lvl)

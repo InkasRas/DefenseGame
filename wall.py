@@ -1,10 +1,5 @@
 import pygame
-from enemy import Enemy
-import random
-from need_fncts import load_image
 from all_variables import *
-from castle import Castle
-from menu import Menu
 
 
 class Wall(pygame.sprite.Sprite):
@@ -16,6 +11,8 @@ class Wall(pygame.sprite.Sprite):
         self.health = wall_lvls[self.lvl][1]
         self.x = x
         self.y = y
+        self.board_x = x // CELL_SIZE
+        self.board_y = y // CELL_SIZE
         self.parent_cell_size = CELL_SIZE
         pygame.draw.rect(self.image, (128, 128, 128), ((0, 0), (20, 80)))
         font = pygame.font.Font('freesansbold.ttf', 12)
@@ -28,6 +25,9 @@ class Wall(pygame.sprite.Sprite):
         if self.rect.collidepoint(x, y):
             return True
         return False
+
+    def get_board_pos(self):
+        return self.board_x, self.board_y
 
     def __str__(self):
         return 'Button ' + self.name + ' ' + str(self.rect)
@@ -47,6 +47,8 @@ class Wall(pygame.sprite.Sprite):
         self.y = y
         self.rect.x = self.x
         self.rect.y = self.y
+        self.board_x = self.x // CELL_SIZE
+        self.board_y = self.y // CELL_SIZE
 
     def draw(self, srfc):
         sr = pygame.Surface(self.image.get_size())
