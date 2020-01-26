@@ -13,6 +13,8 @@ class Castle(pygame.sprite.Sprite):
         self.parent_cell_size = CELL_SIZE
         self.x = x
         self.y = y
+        self.board_x = 0
+        self.board_y = 0
         self.health = 100
 
     def draw(self, surfc):
@@ -20,6 +22,13 @@ class Castle(pygame.sprite.Sprite):
 
     def get_rect(self):
         return self.rect
+
+    def get_board_pos(self):
+        return self.board_y, self.board_x
+
+    def get_board_all_pos(self):
+        return [[(i, j) for j in range(self.board_x, self.board_x + 200 // CELL_SIZE, 1)] for i in
+                range(self.board_y, self.board_y + 200 // CELL_SIZE, 1)]
 
     def change_pos(self, x, y):
         if x > 0 and y > 0:
@@ -30,6 +39,8 @@ class Castle(pygame.sprite.Sprite):
             self.y = y
             self.rect.x = self.x
             self.rect.y = self.y
+            self.board_x = self.x // CELL_SIZE
+            self.board_y = self.y // CELL_SIZE
 
     def hurt(self, k):
         self.health -= k

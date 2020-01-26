@@ -4,20 +4,20 @@ from all_variables import *
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, x, y, lvl):
+    def __init__(self, x, y, lvl, direct):
         super().__init__()
         self.x = x
         self.y = y
         self.lvl = lvl
         self.health = enemy_lvls[lvl][0]
         self.force = enemy_lvls[lvl][1]
-        self.pos = pygame.Vector2((x, y))
-        self.vel = pygame.Vector2(30, 0)
-        self.direction = pygame.Vector2(10, 0)
+        self.pos = pygame.Vector2(x, y)
+        self.direction = pygame.Vector2(*direct)
         self.angle = 0
         self.angle_speed = 0
         self.image = pygame.transform.scale(load_image('enemy/_RUN/_RUN_000.png', -1), (40, 40))
         self.img_num = 0
+        self.on_field = False
         self.rect = pygame.Rect((x, y), (40, 40))
 
     def change_pos(self, x, y):
@@ -25,6 +25,14 @@ class Enemy(pygame.sprite.Sprite):
         self.y = y
         self.rect.x = x
         self.rect.y = y
+
+    def run(self):
+        if not self.on_field:
+            self.pos += self.direction
+            if 0 <= self.pos[0] <= WINDOW_W and 0 <= self.pos[1] <= WINDOW_H:
+                self.on_field = True
+                return True
+            return False
 
     def update(self, time):
         self.pos += self.vel * time // 1000 + self.direction
