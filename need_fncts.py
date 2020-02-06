@@ -41,3 +41,4 @@ def create_enemies(lvl, number):
         enm = Enemy(cords[0] * CELL_SIZE, cords[1] * CELL_SIZE, lvl, chec_dir[word])
         enemies.append(enm)
     return enemies, enemies_cords
+
