@@ -9,6 +9,7 @@ class Wall(pygame.sprite.Sprite):
         self.image = pygame.Surface((20, 80))
         self.price = wall_lvls[self.lvl][0]
         self.health = wall_lvls[self.lvl][1]
+        self.max_health = wall_lvls[self.lvl][1]
         self.x = x
         self.y = y
         self.board_x = x // CELL_SIZE
@@ -53,6 +54,9 @@ class Wall(pygame.sprite.Sprite):
     def draw(self, srfc):
         sr = pygame.Surface(self.image.get_size())
         sr.blit(self.image, (0, 0))
+        rx = round(20 * (self.max_health - self.health) // self.max_health)
+        pygame.draw.line(srfc, (255, 0, 0), (self.x, self.y - 2), (self.x + rx, self.y - 2), 2)
+        pygame.draw.line(srfc, (0, 255, 0), (self.x + rx, self.y - 2), (self.x + 20, self.y - 2), 2)
         font = pygame.font.Font('freesansbold.ttf', 12)
         text = font.render(str(self.lvl + 1), True, (255, 255, 255))
         srfc.blit(text, (0, 0))
