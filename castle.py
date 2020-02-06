@@ -16,9 +16,13 @@ class Castle(pygame.sprite.Sprite):
         self.board_x = 0
         self.board_y = 0
         self.health = 100
+        self.max_health = 100
 
     def draw(self, surfc):
         surfc.blit(self.img, (self.x, self.y))
+        rx = round(200 * (self.max_health - self.health) // self.max_health)
+        pygame.draw.line(surfc, (255, 0, 0), (self.x, self.y - 2), (self.x + rx, self.y - 2), 3)
+        pygame.draw.line(surfc, (0, 255, 0), (self.x + rx, self.y - 2), (self.x + 200, self.y - 2), 3)
 
     def get_rect(self):
         return self.rect
@@ -44,8 +48,10 @@ class Castle(pygame.sprite.Sprite):
 
     def hurt(self, k):
         self.health -= k
+        print(self.health)
         if self.health <= 0:
-            print('lost')
+            return True
+        return False
 
     def get_pos(self):
         return (self.x, self.y)
