@@ -67,8 +67,8 @@ class Main_Menu(pygame.Surface):
                         if bt[0].name == 'play':
                             # play - play game
                             an = get_level(0)
-                            enms, enms_c = create_enemies(0, int(an['en_nm']))
-                            Game(self.parent, 0, enms, enms_c, music_on)
+                            # enms, enms_c = create_enemies(0, int(an['en_nm']))
+                            Game(self.parent, 0, [], [], music_on)
                             running = False
                         elif bt[0].name == 'info':
                             # info - show info
@@ -100,3 +100,4 @@ pygame.init()
 screen = pygame.display.set_mode((WINDOW_W, WINDOW_H))
 mn_m = Main_Menu(screen)
 mn_m.run()
+
