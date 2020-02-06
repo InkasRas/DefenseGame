@@ -77,7 +77,9 @@ def archer_and_wall_placing(game, lvl):
                 running = False
             elif evnt.type == pygame.KEYDOWN:
                 if evnt.key == 13:
-                    return archers, walls
+                    archers_group = pygame.sprite.Group(*archers)
+                    walls_group = pygame.sprite.Group(*walls)
+                    return archers_group, walls_group
                 elif evnt.key in directions.keys() and img_drawing:
                     s_btn.update(directions[evnt.key](s_btn))
             elif evnt.type == pygame.MOUSEBUTTONDOWN:
