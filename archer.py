@@ -1,3 +1,8 @@
+import pygame
+from need_fncts import load_image
+from all_variables import *
+
+
 class Archer(pygame.sprite.Sprite):
     def __init__(self, x, y, lvl):
         super().__init__()
