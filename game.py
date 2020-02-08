@@ -29,12 +29,6 @@ class Game:
             pygame.mixer_music.play(-1)
         self.music_on = music_on
 
-        self.enemies = enms
-        self.enemies_cords = enms_c
-        self.enm = self.enemies.copy()
-        self.all_enms = pygame.sprite.Group()
-        self.all_enms.add(*self.enemies)
-
         # get info about lvl
         self.level_info = get_level(lvl)
         self.money = int(self.level_info['money'])
@@ -80,20 +74,23 @@ class Game:
     def game_over(self):
         '''function for displaying game over'''
         running = True
+        restart_btn = Button(pygame.transform.scale(load_image(PLAY_IMG, -1), (50, 50)), 'restart', 1280 // 2 - 50,
+                             600)
+        font = pygame.font.Font('freesansbold.ttf', 200)
+        text = font.render('GAME OVER', True, (255, 0, 0))
         while running:
+            for evnt in pygame.event.get():
+                if evnt.type == pygame.QUIT:
+                    exit()
+                elif evnt.type == pygame.MOUSEBUTTONDOWN:
+                    if restart_btn.rect.collidepoint(evnt.pos):
+                        from main_menu import Main_Menu
+                        screen = pygame.display.set_mode((1280, 720))
+                        mn_m = Main_Menu(screen)
+                        mn_m.run()
             self.parent.blit(self.bg, (0, 0))
-            font = pygame.font.Font('freesansbold.ttf', 200)
-            text = font.render('GAME OVER', True, (255, 0, 0))
             self.parent.blit(text, (0, 250))
-            restart_btn = Button(pygame.transform.scale(load_image(PLAY_IMG, -1), (50, 50)), 'restart', 1280 // 2 - 50,
-                                 600)
             restart_btn.draw(self.parent)
-            if pygame.mouse.get_pressed():
-                if restart_btn.rect.collidepoint(*pygame.mouse.get_pos()):
-                    from main_menu import Main_Menu
-                    screen = pygame.display.set_mode((1280, 720))
-                    mn_m = Main_Menu(screen)
-                    mn_m.run()
             pygame.display.flip()
 
     def pause(self):
@@ -145,6 +142,9 @@ class Game:
             wall.draw(self.parent)
         for archer in self.archers:
             archer.draw(self.parent)
+        for enm in self.enemies_w:
+            print(enm.board_x, enm.board_y, "TRHEe")
+            enm.draw(self.parent)
 
         # self.all_enms.draw(self.parent)
 
@@ -170,12 +170,17 @@ class Game:
 
         # self.path_finder.find_path((0, 0), self.castle.get_board_pos())
         running = True
-        enemy = Enemy(0, 0, self.lvl, self.castle)
-        enemy.path = find_path(self, (enemy.get_board_pos()[0] + 1, enemy.get_board_pos()[1]),
-                               self.castle.get_board_pos())
-        print(enemy, enemy.path)
+        print('ENEENNENE', self.castle.board_x, self.castle.board_y,
+              self.board[self.castle.board_y][self.castle.board_x])
+        enemy_cooords = [(0, 0), (30, 60)]
         self.enemies_w = pygame.sprite.Group()
-        self.enemies_w.add(enemy)
+        for el in enemy_cooords:
+            enemy = Enemy(el[1] * CELL_SIZE, el[0] * CELL_SIZE, self.lvl, self.castle, self)
+            enemy.path = find_path(self, (enemy.get_board_pos()[0] + 1, enemy.get_board_pos()[1]),
+                                   self.castle.get_board_pos())
+            self.enemies_w.add(enemy)
+            print(enemy, enemy.path)
+
         for ar in self.archers:
             ar.insert_enemies(self.enemies_w)
         while running:
@@ -187,9 +192,13 @@ class Game:
                     self.time -= 1
                     print('self tine', self.time)
                     if self.time < 1:
+                        font = pygame.font.Font('freesansbold.ttf', 80)
+                        text = font.render('WIN', True, (0, 0, 255))
+                        self.parent.blit(text, (1280 // 2 - text.w // 2, 720 // 2 - text.h // 2))
+                        pygame.time.wait(1300)
+                        pygame.display.flip()
                         pygame.mixer.Sound.play(pygame.mixer.Sound(CHEERS_SOUND))
-                        enms, enms_c = create_enemies(1, 7)
-                        Game(self.parent, self.lvl + 1, enms, enms_c, self.music_on)
+                        Game(self.parent, self.lvl + 1, None, None, self.music_on)
                 elif evnt.type == pygame.USEREVENT + 5:
                     for e in self.enemies_w:
                         if e.health <= 0:
@@ -203,23 +212,27 @@ class Game:
                 elif evnt.type == pygame.USEREVENT + 6:
                     for archer in self.archers:
                         archer.img_update()
-                    enemy.update_img()
+                    for enem in self.enemies_w:
+                        enem.update_img()
                 if evnt.type == pygame.MOUSEBUTTONDOWN:
                     if pause_btn.rect.collidepoint(*evnt.pos):
                         pygame.mixer_music.stop()
                         self.pause()
             self.parent.blit(self.bg, (0, 0))
             if len(self.enemies_w) == 0:
+                self.parent.blit(self.bg, (0, 0))
+                font = pygame.font.Font('freesansbold.ttf', 80)
+                text = font.render('WIN', True, (0, 0, 255))
+                self.parent.blit(text, (1280 // 2 - text.w // 2, 720 // 2 - text.h // 2))
+                pygame.time.wait(1300)
+                pygame.display.flip()
                 pygame.mixer.Sound.play(pygame.mixer.Sound(CHEERS_SOUND))
-                enms, enms_c = create_enemies(1, 7)
-                Game(self.parent, self.lvl + 1, enms, enms_c, self.music_on)
+                Game(self.parent, self.lvl + 1, None, None, self.music_on)
             if fnct is not None:
                 fnct()
-            draw_cells(self.board, self.parent)
+            # draw_cells(self.board, self.parent)
             self.castle.draw(self.parent)
             self.draw_all()
-            for e in self.enemies_w:
-                e.draw(self.parent)
             pause_btn.draw(self.parent)
             self.print_time()
             pygame.display.flip()
