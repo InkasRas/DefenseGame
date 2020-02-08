@@ -30,6 +30,9 @@ class Wall(pygame.sprite.Sprite):
     def get_board_pos(self):
         return self.board_x, self.board_y
 
+    def hurt(self, k):
+        self.health -= k
+
     def __str__(self):
         return 'Button ' + self.name + ' ' + str(self.rect)
 
