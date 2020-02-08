@@ -100,4 +100,3 @@ pygame.init()
 screen = pygame.display.set_mode((WINDOW_W, WINDOW_H))
 mn_m = Main_Menu(screen)
 mn_m.run()
-
