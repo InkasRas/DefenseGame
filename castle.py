@@ -15,8 +15,8 @@ class Castle(pygame.sprite.Sprite):
         self.y = y
         self.board_x = 0
         self.board_y = 0
-        self.health = 100
-        self.max_health = 100
+        self.health = 300
+        self.max_health = 300
 
     def draw(self, surfc):
         surfc.blit(self.img, (self.x, self.y))
