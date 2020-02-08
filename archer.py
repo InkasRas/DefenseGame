@@ -1,8 +1,3 @@
-import pygame
-from need_fncts import load_image
-from all_variables import *
-
-
 class Archer(pygame.sprite.Sprite):
     def __init__(self, x, y, lvl):
         super().__init__()
@@ -23,7 +18,7 @@ class Archer(pygame.sprite.Sprite):
         self.parent_cell_size = CELL_SIZE
         self.rect = pygame.Rect((x, y), self.image.get_size())
         self.name = ARCHER
-        self.radius = 100
+        self.radius = 80
 
     def insert_enemies(self, enems):
         self.enms = enems
@@ -54,6 +49,9 @@ class Archer(pygame.sprite.Sprite):
 
     def get_pos(self):
         return self.rect.x, self.rect.y
+
+    def hurt(self, k):
+        self.health -= k
 
     def change_pos(self, x, y):
         prom_x, prom_y = self.parent_cell_size * (x // 20), self.parent_cell_size * (y // 20)
