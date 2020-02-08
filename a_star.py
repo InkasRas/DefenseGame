@@ -41,7 +41,7 @@ def find_path(game, start, target_p, with_draw=False):
     start = Node(start, target_p)
     open_set = [start]
     closed_set = []
-    can_find = False
+    can_find = True
     found = False
     target = Node(target_p)
     cur_n = start
@@ -50,7 +50,7 @@ def find_path(game, start, target_p, with_draw=False):
         if len(open_set) > 0 and not found and can_find:
             if cur_n != target:
                 cur_n = min(open_set, key=lambda x: x.f)
-                board[cur_n.pos[0], cur_n.pos[1]] = PATH_VIOL
+                board[cur_n.pos[1], cur_n.pos[0]] = PATH_VIOL
                 open_set.remove(cur_n)
                 closed_set.append(cur_n.pos)
             if cur_n == target:
@@ -65,7 +65,7 @@ def find_path(game, start, target_p, with_draw=False):
                     game.parent.blit(game.bg, (0, 0))
                     draw_cells(board, game.parent, True)
                     pygame.display.flip()
-                    pygame.time.wait(1200)
+                    pygame.time.wait(4000)
                 return ans
             else:
                 for po in filter(lambda x: x != None,
@@ -86,9 +86,6 @@ def find_path(game, start, target_p, with_draw=False):
                             no.parent = cur_n
                     else:
                         open_set.append(nod)
-        for evnt in pygame.event.get():
-            if evnt.type == pygame.KEYDOWN and evnt.key == pygame.K_SPACE:
-                can_find = True
         if with_draw:
             game.parent.blit(game.bg, (0, 0))
             draw_cells(board, game.parent, True)
