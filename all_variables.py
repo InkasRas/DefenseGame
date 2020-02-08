@@ -159,9 +159,9 @@ HELP_IMG = 'help.png'
 CLOSE_IMG = 'close.png'
 ARCHER_IMG = 'archer/1_IDLE_003.png'
 
-archer_lvls = {0: (25, 10, 2), 1: (50, 15, 3), 2: (100, 20, 4)}
-wall_lvls = {0: (10, 4), 1: (15, 5), 2: (20, 6)}
-enemy_lvls = {0: (12, 2), 1: (24, 2), 2: (30, 3)}
+archer_lvls = {0: (50, 60, 2), 1: (80, 70, 3), 2: (100, 75, 4)}
+wall_lvls = {0: (10, 40), 1: (15, 50), 2: (20, 55)}
+enemy_lvls = {0: (100, 2), 1: (120, 2), 2: (140, 3)}
 
 PAUSE_SONG = 'data/sound/bensound-hipjazz.mp3'
 GAME_SONG = 'data/sound/main_song.mp3'
