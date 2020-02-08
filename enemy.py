@@ -5,7 +5,7 @@ from a_star import find_path
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, x, y, lvl, castle):
+    def __init__(self, x, y, lvl, castle, game):
         super().__init__()
         self.x = x
         self.y = y
@@ -28,8 +28,16 @@ class Enemy(pygame.sprite.Sprite):
         self.on_field = False
         self.radius = 10
         self.active = True
+        self.game = game
         self.is_attack = False
+        self.on_wall_archer = False
+        self.n_x, self.n_y = None, None
         self.rect = pygame.Rect((x, y), (40, 40))
+        if self.board_x > self.castle.board_x:
+            self.img_flip = True
+        else:
+            self.img_flip = False
+        print('ENENMR', self.board_x, self.board_y)
 
     def get_board_pos(self):
         return self.board_x, self.board_y
@@ -43,13 +51,17 @@ class Enemy(pygame.sprite.Sprite):
         return self.castle.hurt(self.force)
 
     def update_pos(self):
+        print('update_pos', self.castle.board_x, self.castle.board_y, self.board_x, self.board_y)
+        if self.board_x > self.castle.board_x:
+            self.img_flip = True
+        else:
+            self.img_flip = False
+        if self.is_attack is True:
+            a = self.break_castle()
+            print(a)
         if self.path is not None:
             if len(self.path) == 0:
                 self.is_attack = True
-                a = self.break_castle()
-                print(a)
-                if a is True:
-                    return True
             else:
                 new_pos = self.path.pop(0)
                 self.board_x = new_pos[1]
@@ -60,12 +72,50 @@ class Enemy(pygame.sprite.Sprite):
                 self.rect.y = self.y
             return False
         else:
-            if self.board_x < self.castle.board_x:
-                self.board_x += 1
+            if not self.on_wall_archer:
+                if self.castle.board_x <= self.board_x <= self.castle.board_x + 10:
+                    if pygame.sprite.collide_rect(self, self.castle):
+                        self.is_attack = True
+                    if self.board_y <= self.castle.board_y:
+                        self.board_y += 1
+                        self.n_x, self.n_y = 0, 1
+                        self.y = self.board_y * CELL_SIZE
+                        self.rect.y = self.y
+                    elif self.board_y >= self.castle.board_y + 10:
+                        self.board_y -= 1
+                        self.n_x, self.n_y = 0, -1
+                        self.y = self.board_y * CELL_SIZE
+                        self.rect.y = self.y
+                if self.board_x <= self.castle.board_x:
+                    self.board_x += 1
+                    self.n_x, self.n_y = 1, 0
+                    self.x = self.board_x * CELL_SIZE
+                    self.rect.x = self.x
+                elif self.board_x >= self.castle.board_x + 10:
+                    self.board_x -= 1
+                    self.n_x, self.n_y = -1, 0
+                    self.x = self.board_x * CELL_SIZE
+                    self.rect.x = self.x
+                print('TY', self.board_x, self.board_y, self.n_x, self.n_y)
+                if self.game.board[self.board_y + self.n_y][self.board_x + self.n_x] == OBSTACLE:
+                    self.on_wall_archer = True
+                    self.attacking_bjs = pygame.sprite.spritecollide(self, self.game.walls, dokill=False)
+                    self.attacking_bjs.extend(pygame.sprite.spritecollide(self, self.game.archers, dokill=False))
+                    print('TYEEEEEEEEE', self.attacking_bjs)
+                    print('new', self.game.board[self.board_y][self.board_x])
             else:
-                self.board_x -= 1
-            self.x = self.board_x * CELL_SIZE
-            self.rect.x = self.x
+                for el in self.attacking_bjs:
+                    el.hurt(self.force)
+                    if el.health <= 0:
+                        for i in range(el.rect.w // CELL_SIZE):
+                            for j in range(el.rect.h // CELL_SIZE):
+                                x = el.board_x + i
+                                y = el.board_y + j
+                                self.game.board[y][x] = CLEAR
+                        el.kill()
+                print('on wall ardwe', self.n_x, self.n_y)
+                if self.game.board[self.board_y + self.n_y][self.board_x + self.n_x] != OBSTACLE:
+                    self.on_wall_archer = False
 
     def change_pos(self, x, y):
         self.x = x
@@ -74,7 +124,10 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.y = y
 
     def draw(self, srfc):
-        srfc.blit(self.image, (self.x + 4, self.y + 4))
+        if self.img_flip:
+            srfc.blit(pygame.transform.flip(self.image, True, False), (self.x + 4, self.y + 4))
+        else:
+            srfc.blit(self.image, (self.x + 4, self.y + 4))
         rx = round(40 * (self.max_health - self.health) // self.max_health)
         pygame.draw.line(srfc, (255, 0, 0), (self.x, self.y - 2), (self.x + rx, self.y - 2), 2)
         pygame.draw.line(srfc, (0, 255, 0), (self.x + rx, self.y - 2), (self.x + 40, self.y - 2), 2)
